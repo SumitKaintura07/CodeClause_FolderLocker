@@ -1,0 +1,67 @@
+import os
+import hashlib
+
+def lock_folder(folder_path, password):
+    # Generate key from password
+    key = hashlib.sha256(password.encode('utf-8')).digest()
+
+    # Walk through all files and subdirectories in the folder
+    for root, dirs, files in os.walk(folder_path):
+        for name in files:
+            # Get file path
+            file_path = os.path.join(root, name)
+
+            # Open file, read contents, encrypt using key, write back to file
+            with open(file_path, 'rb+') as f:
+                plain_text = f.read()
+                cipher_text = bytearray(plain_text)
+                for i in range(len(plain_text)):
+                    cipher_text[i] ^= key[i % len(key)]
+                f.seek(0)
+                f.write(cipher_text)
+                f.truncate()
+
+def unlock_folder(folder_path, password):
+    # Generate key from password
+    key = hashlib.sha256(password.encode('utf-8')).digest()
+
+    # Walk through all files and subdirectories in the folder
+    for root, dirs, files in os.walk(folder_path):
+        for name in files:
+            # Get file path
+            file_path = os.path.join(root, name)
+
+            # Open file, read contents, decrypt using key, write back to file
+            with open(file_path, 'rb+') as f:
+                cipher_text = f.read()
+                plain_text = bytearray(cipher_text)
+                for i in range(len(cipher_text)):
+                    plain_text[i] ^= key[i % len(key)]
+                f.seek(0)
+                f.write(plain_text)
+                f.truncate()
+
+if __name__ == '__main__':
+    folder_path = input("Enter folder path to lock/unlock: ")
+    password = input("Enter password: ")
+    lock_folder(folder_path, password)
+    print("Folder locked.")
+    # Wait for user to press enter
+    input("Press enter to unlock folder...")
+    unlock_folder(folder_path, password)
+    print("Folder unlocked.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+This code takes a folder path and a password from the user, and then encrypts or decrypts all files in the folder using the provided password. The encryption is done using XOR encryption with a key generated from the password using SHA-256 hashing. The user can then unlock the folder by running the script again and entering the same password.

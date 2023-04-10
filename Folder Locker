@@ -1,37 +1,49 @@
-import os
-import hashlib
+    import os
 
-def lock_folder(folder_path, password):
-    # Generate key from password
+    import hashlib
+
+    def lock_folder(folder_path, password):
+
+# Generate key from password
+    
     key = hashlib.sha256(password.encode('utf-8')).digest()
 
-    # Walk through all files and subdirectories in the folder
-    for root, dirs, files in os.walk(folder_path):
-        for name in files:
-            # Get file path
-            file_path = os.path.join(root, name)
+# Walk through all files and subdirectories in the folder
+   
+   for root, dirs, files in os.walk(folder_path):
+   for name in files:
+            
+# Get file path
+            
+    file_path = os.path.join(root, name)
 
-            # Open file, read contents, encrypt using key, write back to file
-            with open(file_path, 'rb+') as f:
-                plain_text = f.read()
-                cipher_text = bytearray(plain_text)
-                for i in range(len(plain_text)):
-                    cipher_text[i] ^= key[i % len(key)]
-                f.seek(0)
-                f.write(cipher_text)
-                f.truncate()
+# Open file, read contents, encrypt using key, write back to file
+    
+    with open(file_path, 'rb+') as f:
+    plain_text = f.read()
+    cipher_text = bytearray(plain_text)
+    for i in range(len(plain_text)):
+    cipher_text[i] ^= key[i % len(key)]
+    f.seek(0)
+    f.write(cipher_text)
+    f.truncate()
 
-def unlock_folder(folder_path, password):
-    # Generate key from password
+    def unlock_folder(folder_path, password):
+    
+# Generate key from password
+    
     key = hashlib.sha256(password.encode('utf-8')).digest()
 
-    # Walk through all files and subdirectories in the folder
+# Walk through all files and subdirectories in the folder
+    
     for root, dirs, files in os.walk(folder_path):
-        for name in files:
-            # Get file path
+    for name in files:
+
+# Get file path
             file_path = os.path.join(root, name)
 
-            # Open file, read contents, decrypt using key, write back to file
+# Open file, read contents, decrypt using key, write back to file
+            
             with open(file_path, 'rb+') as f:
                 cipher_text = f.read()
                 plain_text = bytearray(cipher_text)
@@ -46,7 +58,9 @@ if __name__ == '__main__':
     password = input("Enter password: ")
     lock_folder(folder_path, password)
     print("Folder locked.")
-    # Wait for user to press enter
+    
+# Wait for user to press enter
+    
     input("Press enter to unlock folder...")
     unlock_folder(folder_path, password)
     print("Folder unlocked.")
